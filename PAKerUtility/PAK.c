@@ -5,6 +5,8 @@
 
 #ifdef __unix__
 #include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #elif defined(_WIN32) || defined(WIN32)
 #include <direct.h>
 #endif
@@ -76,11 +78,11 @@ int ExtractFilePAKFile(FILE *infp, unsigned int index, struct PAKFileData* PAKFi
 				{
 					if ((p_name[iii] == '/') || (p_name[iii] == '\\')) {
 						p_name[iii] = '\0';
-						mkdir(PAKFileData->FileEntries[index].filepath);
+						mkdir(PAKFileData->FileEntries[index].filepath, 775);
 						p_name[iii] = slash;
 					}
 				}
-				mkdir(PAKFileData->FileEntries[index].filepath);
+				mkdir(PAKFileData->FileEntries[index].filepath, 775);
 				p_name[ii] = slash;
 				break;
 			}
@@ -194,7 +196,7 @@ int DumpPAKFile(const char *filename){
 	strcat(FOLDER, filename);
 	if((infp=fopen(filename, "rb"))!=NULL){
 		if((result=LoadPAKFile(infp, &PAKFileData))==0){
-			mkdir(FOLDER);
+			mkdir(FOLDER, 775);
 			chdir(FOLDER);
 
 			for(i=0,crc_f=0; i<PAKFileData.Header.num_entries; i++){
